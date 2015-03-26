@@ -1,0 +1,51 @@
+Итак, берем серийник девайса, например Serial Number: 810432876
+
+Создаем исходный код для md5 (переводим его в HEX):
+810432876 = 0x304E396C (serial) = 6C 39 4E 30
+добавляем код лицензии (других не знаю)
+AES+DES+UR = 0x00000039 (futures) = 39 00 00 00
+
+= 8 bytes (39 00 00 00 6C 39 4E 30) = 390000006C394E30
+
+Берем MD5 по этим 8-ми байтам:
+Код:
+perl -e 'use Digest::MD5 qw(md5_hex); print md5_hex(pack("H*", "390000006C394E30"))'
+
+Делим результат на 4 группы по 4 байта:
+2c85cb16ed904126013ced6754212f60 ==> 2c85cb16 ed904126 013ced67 54212f60
+
+Меняем порядок байт в каждой группе байтов (dword) и получаем activation-key:
+==> 0x16cb852c 0x264190ed 0x67ed3c01 0x602f2154
+
+Для 515 и 515E это работает, в результате получаем такую лицензию:
+
+pix-515# activation-key 0x16cb852c 0x264190ed 0x67ed3c01 0x602f2154
+Maximum Physical Interfaces : 6
+Maximum VLANs : 25
+Inside Hosts : Unlimited
+Failover : Active/Active
+VPN-DES : Enabled
+VPN-3DES-AES : Enabled
+Cut-through Proxy : Enabled
+Guards : Enabled
+URL Filtering : Enabled
+Security Contexts : 2
+GTP/GPRS : Disabled
+VPN Peers : Unlimited
+
+This platform has an Unrestricted (UR) license.
+Both running and flash activation keys were updated with the requested key.
+
+Генератор:
+#!/usr/bin/perl
+#
+#   (с)  BAHO1971
+#
+use Digest::MD5 qw(md5_hex);
+ 
+$serial = $ARGV[0];
+$h_serial = sprintf ("%x", $serial);
+$r_h_serial = "$4$3$2$1" if $h_serial =~ /^(..)(..)(..)(..)$/;
+$l_s = "39000000" . $r_h_serial;
+$r_k = md5_hex(pack("H*", $l_s));
+print "0x$4$3$2$1 0x$8$7$6$5 0x$12$11$10$9 0x$16$15$14$13\n" if $r_k =~ /^(..)(..)(..)(..)(..)(..)(..)(..)(..)(..)(..)(..)(..)(..)(..)(..)$/;
