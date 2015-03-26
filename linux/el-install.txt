@@ -1,0 +1,199 @@
+install minimal:
+
+change root password:
+
+save password to store:
+
+remove packages:
+	all firmware-packets (vurtual)
+	alsa-libs desktop-file-utils emacs-filesystem rhnsd
+
+install packages:
+	wget lynx
+	
+install repos: 
+	EPEL
+	VMWare-Tools
+	
+install packages: 
+	man net-tools vim-enhanced bash-completion bind-utils net-tools traceroute sg3_utils lsscsi gdisk fail2ban cowsay htop iftop iotop atop parted pciutils sysstat sysfsutils openssh-clients apg mutt rsync ftp mc nc telnet ntp genisoimage syslinux lshw lsof strace mlocate pv vlock zip unzip p7zip convmv policycoreutils-python setroubleshoot setroubleshoot-server setroubleshoot-plugins setools-console libsemanage libsepol checkpolicy selinux-policy tuned xorg-x11-xauth yum-metadata-parser yum-plugin-aliases yum-plugin-replace yum-plugin-downloadonly yum-plugin-fastestmirror yum-plugin-filter-data yum-plugin-fs-snapshot yum-plugin-keys yum-plugin-list-data yum-plugin-local yum-plugin-merge-conf yum-plugin-post-transaction-actions yum-plugin-protect-packages yum-plugin-protectbase yum-plugin-ps yum-plugin-remove-with-leaves yum-plugin-rpm-warm-cache yum-plugin-security yum-plugin-show-leaves yum-plugin-tmprepo yum-plugin-verify yum-plugin-versionlock yum-presto yum-utils yum-plugin-priorities
+	
+install guest-tools:
+	vmware-tools-esx-kmods vmware-tools-esx-nox 
+	open-vm-tools
+	libguestfs-tools (!dependencies)
+
+configure services:
+	firewalld\firewall-config\iptables,  fail2ban, chrony\ntpd
+
+configure yum:
+	/etc/yum.conf
+		clean_requirements_on_remove=1
+
+configure additional filesystems:
+	/etc/fstab
+		UUID=54d24b58-b61d-4547-945b-7894ec73af14 /part ext4 defaults,acl,user_xattr,relatime,barrier=1        1 2
+		UUID=54d24b58-b61d-4547-945b-7894ec73af15 /part xfs  defaults,attr2                                    1 2
+		(!usrquota,grpquota)
+		(!noatime, nodiratime)
+
+configure hostname:
+	/etc/hostname
+		host.example.org
+	hostnamectl set-hostname --pretty "Example Host"
+	hostnamectl set-hostname --static host.example.org
+	hostnamectl set-hostname --transient host.example.org (may be changed by dhcp)
+	
+configure networking:
+	/etc/sysconfig/network
+		NETWORKING=yes
+		NOZEROCONF=yes
+		GATEWAY=gw.ip.ad.dr
+		GATEWAYDEV=gw-interface-name
+		HOSTNAME=host.example.org (5-6 only)
+
+configure shell prompt:
+	.bashrc for redhat root:
+		pr="\[\e[1;31m\]"
+		end="\[\e[0m\]"
+		PS1="$pr[\\u@\\h \\W]\\$ $end"
+
+	.bashrc for centos root:
+		pr="\[\e[1;34m\]"
+		end="\[\e[0m\]"
+		PS1="$pr[\\u@\\h \\W]\\$ $end"
+
+	.bashrc for privileged system user or sudoer:
+		pr="\[\e[33m\]"
+		end="\[\e[0m\]"
+		PS1="$pr[\\u@\\h \\W]\\$ $end"
+
+restrict access to the system:
+	/etc/pam.d/sshd
+		+account    sufficient   pam_localuser.so
+		+account    required     pam_succeed_if.so user ingroup admins
+	/etc/sssd/sssd.conf:
+		access_provider = simple
+		simple_allow_groups = admins
+
+custom control file:
+	/etc/sysctl.d/50-custom.conf
+
+#======================================
+#  BASIC VALUES
+#======================================
+# Controls IP packet forwarding
+net.ipv4.ip_forward = 0
+
+# Controls source route verification
+net.ipv4.conf.default.rp_filter = 1
+
+# Do not accept source routing
+net.ipv4.conf.default.accept_source_route = 0
+
+# Controls the System Request debugging functionality of the kernel
+kernel.sysrq = 0
+
+# Controls whether core dumps will append the PID to the core filename.
+# Useful for debugging multi-threaded applications.
+kernel.core_uses_pid = 1
+
+# Controls the use of TCP syncookies
+net.ipv4.tcp_syncookies = 1
+
+# Disable netfilter on bridges.
+net.bridge.bridge-nf-call-ip6tables = 0
+net.bridge.bridge-nf-call-iptables = 0
+net.bridge.bridge-nf-call-arptables = 0
+
+# Controls the default maxmimum size of a mesage queue
+kernel.msgmnb = 65536
+
+# Controls the maximum size of a message, in bytes
+kernel.msgmax = 65536
+
+# Controls the maximum shared segment size, in bytes
+kernel.shmmax = 68719476736
+
+# Controls the maximum number of shared memory segments, in pages
+kernel.shmall = 4294967296
+#=============================================
+#  ADVANCED VALUES (ORACLE RDBMS COMPATIBLE)
+#=============================================
+########## SHARED MEMORY #############
+# Tune shared memory size
+vm.nr_hugepages = 512
+vm.swappiness = 0
+vm.dirty_background_ratio = 3
+vm.dirty_ratio = 15
+vm.dirty_expire_centisecs = 500
+vm.dirty_writeback_centisecs = 100
+# Tune system-wide semaphore arrays
+kernel.sem = 250 32000 100 128
+########## FILESYSTEMS #############
+# Tune filesystem parameters
+fs.file-max = 6815744
+fs.aio-max-nr = 1048576
+########## KERNEL #############
+# Tune kernel parameters
+kernel.shmmni = 4096
+# Allow more PIDs
+kernel.pid_max = 65536
+########## NETWORKING #############
+#---------[ Core Networking ]------------
+# Default receive buffer size for all types connections, in bytes
+net.core.rmem_default = 262144
+# Maximum receive buffer size for all types connections, in bytes
+net.core.rmem_max = 16777216
+# Default transmit buffer size for all types connections, in bytes
+net.core.wmem_default = 262144
+# Maximum transmit buffer size for all types connections, in bytes
+net.core.wmem_max = 16777216
+# Maximum opened connection sockets
+net.core.somaxconn = 10000
+# Maximum packets in network device queue (recommended to increase this for 1000 BT or higher)
+# For 1 GigabitEthernet
+net.core.netdev_max_backlog = 2500
+# For 10 GigabitEthernet
+# net.core.netdev_max_backlog = 30000
+#---------[ IPv4 Networking ]------------
+# Disable ICMP redirects
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.all.secure_redirects = 0
+net.ipv4.conf.all.send_redirects = 0
+# Local-initiated source ports range
+net.ipv4.ip_local_port_range = 9000 65500
+# Memory usage per receive buffer min-threshold-max for all tcp connections, in pages
+net.ipv4.tcp_rmem = 4096 87380 16777216 
+# Memory usage per transmit buffer min-threshold-max for all tcp connections, in pages
+net.ipv4.tcp_wmem = 4096 65536 16777216 
+# Memory usage min-threshold-max for all tcp connections, in pages
+net.ipv4.tcp_mem = 2097152 4194304 8388608
+# Timeout for FIN-WAIT2 tcp socket state
+net.ipv4.tcp_fin_timeout = 15
+# Allow timestamps for congestion control
+net.ipv4.tcp_timestamps = 1
+# Allow Selective ACK for tcp connections
+net.ipv4.tcp_sack = 1
+# Allow reuse TIME-WAIT socket
+net.ipv4.tcp_tw_reuse = 1
+# Allow dynamic tcp window size
+net.ipv4.tcp_window_scaling = 1
+# Don't cache ssthresh from previous connection
+net.ipv4.tcp_no_metrics_save = 1
+# Commit values to all new connections
+net.ipv4.route.flush = 1
+#---------[ IPv6 Networking ]------------
+# Number of Router Solicitations to send until assuming no routers are present.
+# This is host and not router
+net.ipv6.conf.default.router_solicitations = 0
+# Accept Router Preference in RA?
+net.ipv6.conf.default.accept_ra_rtr_pref = 0
+# Learn Prefix Information in Router Advertisement
+net.ipv6.conf.default.accept_ra_pinfo = 0
+# Setting controls whether the system will accept Hop Limit settings from a router advertisement
+net.ipv6.conf.default.accept_ra_defrtr = 0
+#router advertisements can cause the system to assign a global unicast address to an interface
+net.ipv6.conf.default.autoconf = 0
+#how many neighbor solicitations to send out per address?
+net.ipv6.conf.default.dad_transmits = 0
