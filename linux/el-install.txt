@@ -16,7 +16,135 @@ install repos:
 	VMWare-Tools
 	
 install packages: 
-	man net-tools vim-enhanced bash-completion bind-utils net-tools traceroute sg3_utils lsscsi gdisk fail2ban cowsay htop iftop iotop atop parted pciutils sysstat sysfsutils openssh-clients apg mutt rsync ftp mc nc telnet ntp genisoimage syslinux lshw lsof strace mlocate pv vlock zip unzip p7zip convmv policycoreutils-python setroubleshoot setroubleshoot-server setroubleshoot-plugins setools-console libsemanage libsepol checkpolicy selinux-policy tuned xorg-x11-xauth yum-metadata-parser yum-plugin-aliases yum-plugin-replace yum-plugin-downloadonly yum-plugin-fastestmirror yum-plugin-filter-data yum-plugin-fs-snapshot yum-plugin-keys yum-plugin-list-data yum-plugin-local yum-plugin-merge-conf yum-plugin-post-transaction-actions yum-plugin-protect-packages yum-plugin-protectbase yum-plugin-ps yum-plugin-remove-with-leaves yum-plugin-rpm-warm-cache yum-plugin-security yum-plugin-show-leaves yum-plugin-tmprepo yum-plugin-verify yum-plugin-versionlock yum-presto yum-utils yum-plugin-priorities
+	
+	images:
+		genisoimage
+		syslinux
+	
+	services:
+		fail2ban
+		ntp
+		tuned
+	
+	arch:
+		zip
+		unzip
+		p7zip
+	
+	disk:
+		gdisk
+		parted	
+	
+	top:
+		htop
+		iftop
+		iotop
+		atop	
+	
+	list:
+		lsof
+		lsscsi
+		lshw
+		
+	diag:
+		redhat-lsb-core
+		perf
+		pcp
+		sos
+		smem
+		sysstat
+		strace
+		
+	network:
+		bind-utils
+		net-tools
+		nmap
+		nc
+		telnet
+		tcpdump
+		traceroute
+		iperf
+		whois
+	
+	editors:
+		vim-enhanced
+		nano
+		mc
+		mutt
+	
+	hardware:
+		sg3_utils
+		pciutils
+		sysfsutils
+	
+	clients:	
+		ftp
+		rsync
+		openssh-clients
+		elinks
+		lynx
+		wget
+	
+	utils:
+		apg
+		convmv
+		cowsay
+		pv
+	
+	tools:
+		man
+		mlocate
+		pcre-tools
+		realmd
+		
+	term:
+		vlock
+		screen
+		tmux
+		bash-completion
+	
+	selinux:
+		checkpolicy
+		libsemanage
+		libsepol
+		policycoreutils-python
+		selinux-policy
+		setroubleshoot
+		setroubleshoot-server
+		setroubleshoot-plugins
+		setools-console
+	
+	x11:
+		xorg-x11-xauth
+		xorg-x11-apps
+	
+	yum:
+		yum-metadata-parser
+		yum-plugin-aliases
+		yum-plugin-replace
+		yum-plugin-downloadonly
+		yum-plugin-fastestmirror
+		yum-plugin-filter-data
+		yum-plugin-fs-snapshot
+		yum-plugin-keys
+		yum-plugin-list-data
+		yum-plugin-local
+		yum-plugin-merge-conf
+		yum-plugin-post-transaction-actions
+		yum-plugin-protect-packages
+		yum-plugin-protectbase
+		yum-plugin-ps
+		yum-plugin-remove-with-leaves
+		yum-plugin-rpm-warm-cache
+		yum-plugin-security
+		yum-plugin-show-leaves
+		yum-plugin-tmprepo
+		yum-plugin-verify
+		yum-plugin-versionlock
+		yum-presto
+		yum-utils
+		yum-plugin-priorities
+
 	
 install guest-tools:
 	vmware-tools-esx-kmods vmware-tools-esx-nox 
