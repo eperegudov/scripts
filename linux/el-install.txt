@@ -52,14 +52,20 @@ install packages:
 		pcp
 		sos
 		smem
+		dstat
 		sysstat
 		strace
 		
 	network:
 		bind-utils
+		httpry
+		iptstate
+		ngrep
 		net-tools
+		nethogs
 		nmap
 		nc
+		mtr
 		telnet
 		tcpdump
 		traceroute
@@ -87,8 +93,11 @@ install packages:
 	
 	utils:
 		apg
+		ccze
 		convmv
 		cowsay
+		crudini
+		multitail
 		pv
 	
 	tools:
