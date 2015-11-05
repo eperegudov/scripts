@@ -93,6 +93,7 @@ install packages:
 	
 	utils:
 		apg
+		augeas
 		ccze
 		convmv
 		cowsay
