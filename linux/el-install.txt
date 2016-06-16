@@ -216,18 +216,11 @@ restrict access to the system:
 
 custom control file:
 	/etc/sysctl.d/50-custom.conf
+#=======================================================
+#  ADVANCED SYSTEM CONFIGURATION (ORACLE COMPATIBLE)
+#=======================================================
 
-#======================================
-#  BASIC VALUES
-#======================================
-# Controls IP packet forwarding
-net.ipv4.ip_forward = 0
-
-# Controls source route verification
-net.ipv4.conf.default.rp_filter = 1
-
-# Do not accept source routing
-net.ipv4.conf.default.accept_source_route = 0
+#---------[ Kernel ]------------
 
 # Controls the System Request debugging functionality of the kernel
 kernel.sysrq = 0
@@ -236,15 +229,18 @@ kernel.sysrq = 0
 # Useful for debugging multi-threaded applications.
 kernel.core_uses_pid = 1
 
-# Controls the use of TCP syncookies
-net.ipv4.tcp_syncookies = 1
+# Tune kernel parameters
+kernel.shmmni = 4096
 
-# Disable netfilter on bridges.
-net.bridge.bridge-nf-call-ip6tables = 0
-net.bridge.bridge-nf-call-iptables = 0
-net.bridge.bridge-nf-call-arptables = 0
+# Allow more PIDs
+kernel.pid_max = 65536
 
-# Controls the default maxmimum size of a mesage queue
+# Kernel pointers which are printed using "%pK" are hidden
+kernel.kptr_restrict = 1
+
+#---------[ Shared Memory ]------------
+
+# Controls the default maxmimum size of a message queue
 kernel.msgmnb = 65536
 
 # Controls the maximum size of a message, in bytes
@@ -255,83 +251,167 @@ kernel.shmmax = 68719476736
 
 # Controls the maximum number of shared memory segments, in pages
 kernel.shmall = 4294967296
-#=============================================
-#  ADVANCED VALUES (ORACLE RDBMS COMPATIBLE)
-#=============================================
-########## SHARED MEMORY #############
+
+# Tune system-wide semaphore arrays
+kernel.sem = 250 32000 100 128
+
+#---------[ Virtual Memory ]------------
+
 # Tune shared memory size
 vm.nr_hugepages = 512
-vm.swappiness = 0
+vm.swappiness = 5
+vm.vfs_cache_pressure = 1000
 vm.dirty_background_ratio = 3
 vm.dirty_ratio = 15
 vm.dirty_expire_centisecs = 500
 vm.dirty_writeback_centisecs = 100
-# Tune system-wide semaphore arrays
-kernel.sem = 250 32000 100 128
-########## FILESYSTEMS #############
+
+#---------[ Filesystems ]------------
+
 # Tune filesystem parameters
 fs.file-max = 6815744
 fs.aio-max-nr = 1048576
-########## KERNEL #############
-# Tune kernel parameters
-kernel.shmmni = 4096
-# Allow more PIDs
-kernel.pid_max = 65536
-########## NETWORKING #############
+
 #---------[ Core Networking ]------------
+
+# Disable netfilter on bridges
+net.bridge.bridge-nf-call-ip6tables = 0
+net.bridge.bridge-nf-call-iptables = 0
+net.bridge.bridge-nf-call-arptables = 0
+
 # Default receive buffer size for all types connections, in bytes
-net.core.rmem_default = 262144
+net.core.rmem_default = 16777216
+
 # Maximum receive buffer size for all types connections, in bytes
-net.core.rmem_max = 16777216
+net.core.rmem_max = 268435456
+
 # Default transmit buffer size for all types connections, in bytes
-net.core.wmem_default = 262144
+net.core.wmem_default = 16777216
+
 # Maximum transmit buffer size for all types connections, in bytes
-net.core.wmem_max = 16777216
+net.core.wmem_max = 268435456
+
 # Maximum opened connection sockets
 net.core.somaxconn = 10000
+
 # Maximum packets in network device queue (recommended to increase this for 1000 BT or higher)
 # For 1 GigabitEthernet
-net.core.netdev_max_backlog = 2500
+# net.core.netdev_max_backlog = 2500
 # For 10 GigabitEthernet
-# net.core.netdev_max_backlog = 30000
+net.core.netdev_max_backlog = 30000
+
 #---------[ IPv4 Networking ]------------
+
+# Disable IP packet forwarding
+net.ipv4.ip_forward = 0
+
+# Commit values to all new connections
+net.ipv4.route.flush = 1
+
+# Filter source route verification
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+
+# Log Martians packets
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+
+# Do not accept source routing
+net.ipv4.conf.default.accept_source_route = 0
+
 # Disable ICMP redirects
 net.ipv4.conf.all.accept_redirects = 0
 net.ipv4.conf.all.secure_redirects = 0
 net.ipv4.conf.all.send_redirects = 0
+
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv4.conf.default.secure_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+
+# Disable broadcast ICMP requests responds
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+
 # Local-initiated source ports range
 net.ipv4.ip_local_port_range = 9000 65500
+
 # Memory usage per receive buffer min-threshold-max for all tcp connections, in pages
-net.ipv4.tcp_rmem = 4096 87380 16777216 
+net.ipv4.tcp_rmem = 4096 87380 134217728
+
 # Memory usage per transmit buffer min-threshold-max for all tcp connections, in pages
-net.ipv4.tcp_wmem = 4096 65536 16777216 
+net.ipv4.tcp_wmem = 4096 65536 134217728
+
 # Memory usage min-threshold-max for all tcp connections, in pages
 net.ipv4.tcp_mem = 2097152 4194304 8388608
+
+# Half-open connections to backlog queue
+net.ipv4.tcp_max_syn_backlog = 4096
+
 # Timeout for FIN-WAIT2 tcp socket state
 net.ipv4.tcp_fin_timeout = 15
+
+# Allow the use of TCP syncookies
+net.ipv4.tcp_syncookies = 1
+
+# Allow TCP_FASTOPEN option by default
+net.ipv4.tcp_fastopen = 1
+
 # Allow timestamps for congestion control
 net.ipv4.tcp_timestamps = 1
+
 # Allow Selective ACK for tcp connections
 net.ipv4.tcp_sack = 1
+
 # Allow reuse TIME-WAIT socket
 net.ipv4.tcp_tw_reuse = 1
+
 # Allow dynamic tcp window size
 net.ipv4.tcp_window_scaling = 1
+
 # Don't cache ssthresh from previous connection
 net.ipv4.tcp_no_metrics_save = 1
-# Commit values to all new connections
-net.ipv4.route.flush = 1
+
+# Recover connection gracefully if frames larger than the WAN MTU are sent and there is no ICMP reply
+net.ipv4.tcp_mtu_probing = 1
+
+# Don't use default window size only for new TCP connections and for existing TCP connections that have been idle
+net.ipv4.tcp_slow_start_after_idle = 0
+
+# Set TCP Keep-Alive interval
+net.ipv4.tcp_keepalive_time = 900
+
+# Reset connections if listening service is too slow to accept new connections
+net.ipv4.tcp_abort_on_overflow=1
+
+# How many times to retransmit the SYN,ACK reply to an SYN request
+net.ipv4.tcp_synack_retries = 3
+
 #---------[ IPv6 Networking ]------------
+
+# Disable ICMPv6 redirects
+net.ipv6.conf.default.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+
+# Disable IPv6 packet forwarding
+net.ipv6.conf.default.forwarding = 0
+
+# Disable source route accepting
+net.ipv6.conf.default.accept_source_route = 0
+
 # Number of Router Solicitations to send until assuming no routers are present.
 # This is host and not router
 net.ipv6.conf.default.router_solicitations = 0
+
 # Accept Router Preference in RA?
 net.ipv6.conf.default.accept_ra_rtr_pref = 0
+
 # Learn Prefix Information in Router Advertisement
 net.ipv6.conf.default.accept_ra_pinfo = 0
+
 # Setting controls whether the system will accept Hop Limit settings from a router advertisement
 net.ipv6.conf.default.accept_ra_defrtr = 0
+
 #router advertisements can cause the system to assign a global unicast address to an interface
 net.ipv6.conf.default.autoconf = 0
+
 #how many neighbor solicitations to send out per address?
 net.ipv6.conf.default.dad_transmits = 0
