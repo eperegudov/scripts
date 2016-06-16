@@ -215,7 +215,7 @@ restrict access to the system:
 		simple_allow_groups = admins
 
 custom control file:
-	/etc/sysctl.d/50-custom.conf
+	/etc/sysctl.d/90-custom.conf
 #=======================================================
 #  ADVANCED SYSTEM CONFIGURATION (ORACLE COMPATIBLE)
 #=======================================================
